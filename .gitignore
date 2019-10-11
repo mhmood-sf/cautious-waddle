@@ -1,0 +1,5 @@
+tool/
+bin/
+
+*.exe
+*.o
