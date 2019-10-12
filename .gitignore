@@ -1,5 +1,3 @@
-tool/
 bin/
-
 *.exe
 *.o
