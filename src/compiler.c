@@ -4,21 +4,31 @@
 #include "compiler.h"
 #include "scanner.h"
 
-void compile(const char* source) {
+typedef struct {
+    Token previous;
+    Token current;
+} Parser;
+
+Parser parser;
+
+static void errorAtCurrent(const char* message) {
+    errorAt(&parser.current, message);
+}
+
+bool compile(const char* source, Chunk* chunk) {
     initScanner(source);
+    advance();
+    expression();
+    consume(TOKEN_EOF, "Expect end of expression.");
+}
 
-    int line = -1;
+static void advance() {
+    parser.previous = parser.current;
+
     for (;;) {
-        Token token = scanToken();
-        if (token.line != line) {
-            printf("%4d", token.line);
-            line = token.line;
-        } else {
-            printf("   | ");
-        }
-        printf("%2d '%.*s'\n", token.type, token.length, token.start);
+        parser.current = scanToken();
+        if (parser.current.type != TOKEN_ERROR) break;
 
-        if (token.type == TOKEN_EOF) break;
+        errorAtCurrent(parser.current.start);
     }
-
 }
