@@ -151,6 +151,18 @@ static void binary() {
     }
 }
 
+static void literal() {
+    switch (parser.previous.type) {
+        case TOKEN_FALSE:
+            emitByte(OP_FALSE); break;
+        case TOKEN_NIL:
+            emitByte(OP_NIL); break;
+        case TOKEN_TRUE:
+            emitByte(OP_TRUE); break;
+        default:
+            return;
+    }
+}
 
 static void grouping() {
     expression();
@@ -201,17 +213,17 @@ ParseRule rules[] = {
     { NULL, NULL, PREC_NONE }, // AND
     { NULL, NULL, PREC_NONE }, // CLASS
     { NULL, NULL, PREC_NONE }, // ELSE
-    { NULL, NULL, PREC_NONE }, // FALSE
+    { literal, NULL, PREC_NONE }, // FALSE
     { NULL, NULL, PREC_NONE }, // FOR
     { NULL, NULL, PREC_NONE }, // FUN
     { NULL, NULL, PREC_NONE }, // IF
-    { NULL, NULL, PREC_NONE }, // NIL
+    { literal, NULL, PREC_NONE }, // NIL
     { NULL, NULL, PREC_NONE }, // OR
     { NULL, NULL, PREC_NONE }, // PRINT
     { NULL, NULL, PREC_NONE }, // RETURN
     { NULL, NULL, PREC_NONE }, // SUPER
     { NULL, NULL, PREC_NONE }, // THIS
-    { NULL, NULL, PREC_NONE }, // TRUE
+    { literal, NULL, PREC_NONE }, // TRUE
     { NULL, NULL, PREC_NONE }, // VAR
     { NULL, NULL, PREC_NONE }, // WHILE
     { NULL, NULL, PREC_NONE }, // ERROR
