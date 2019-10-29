@@ -142,6 +142,12 @@ static void binary() {
     parsePrecedence((Precedence)(rule->precedence + 1));
 
     switch (operatorType) {
+        case TOKEN_BANG_EQUAL: emitBytes(OP_EQUAL, OP_NOT); break;
+        case TOKEN_EQUAL_EQUAL: emitByte(OP_EQUAL); break;
+        case TOKEN_GREATER: emitByte(OP_GREATER); break;
+        case TOKEN_GREATER_EQUAL: emitBytes(OP_LESS, OP_NOT); break;
+        case TOKEN_LESS: emitByte(OP_LESS); break;
+        case TOKEN_LESS_EQUAL: emitBytes(OP_GREATER, OP_NOT); break;
         case TOKEN_PLUS: emitByte(OP_ADD); break;
         case TOKEN_MINUS: emitByte(OP_SUBTRACT); break;
         case TOKEN_STAR: emitByte(OP_MULTIPLY); break;
@@ -181,6 +187,7 @@ static void unary() {
 
     // Emit operator instruction
     switch (operatorType) {
+        case TOKEN_BANG: emitByte(OP_NOT); break;
         case TOKEN_MINUS: emitByte(OP_NEGATE); break;
         default:
             return; // Unreachable.
@@ -199,14 +206,14 @@ ParseRule rules[] = {
     { NULL, NULL, PREC_NONE }, // SEMICOLON
     { NULL, binary, PREC_FACTOR }, // SLASH
     { NULL, binary, PREC_FACTOR }, // STAR
-    { NULL, NULL, PREC_NONE }, // BANG
-    { NULL, NULL, PREC_NONE }, // BANG_EQUAL
+    { unary, NULL, PREC_NONE }, // BANG
+    { NULL, binary, PREC_EQUALITY }, // BANG_EQUAL
     { NULL, NULL, PREC_NONE }, // EQUAL
-    { NULL, NULL, PREC_NONE }, // EQUAL_EQUAL
-    { NULL, NULL, PREC_NONE }, // GREATER
-    { NULL, NULL, PREC_NONE }, // GREATER_EQUAL
-    { NULL, NULL, PREC_NONE }, // LESS
-    { NULL, NULL, PREC_NONE }, // LESS_EQUAL
+    { NULL, binary, PREC_EQUALITY }, // EQUAL_EQUAL
+    { NULL, binary, PREC_COMPARISON }, // GREATER
+    { NULL, binary, PREC_COMPARISON }, // GREATER_EQUAL
+    { NULL, binary, PREC_COMPARISON }, // LESS
+    { NULL, binary, PREC_COMPARISON }, // LESS_EQUAL
     { NULL, NULL, PREC_NONE }, // IDENTIFIER
     { NULL, NULL, PREC_NONE }, // STRING
     { number, NULL, PREC_NONE }, // NUMBER
